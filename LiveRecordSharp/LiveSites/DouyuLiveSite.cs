@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Net;
 using System.Net.Http;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using LiveRecordSharp.Properties;
@@ -10,8 +12,10 @@ namespace LiveRecordSharp.LiveSites
 {
     public sealed class DouyuLiveSite : LiveSite
     {
-        public override Regex SiteRegex { get; } = new Regex("http://www.douyutv.com/", RegexOptions.Compiled);
-        private Regex RoomInfoJsonRegex { get; } = new Regex(@"(?<=var \$ROOM = ).+?(?=;)", RegexOptions.Compiled);
+        public override Regex SiteRegex { get; } = new Regex("http://www.douyu(tv|).com/", RegexOptions.Compiled);
+        private Regex RoomInfoJsonRegex { get; } = new Regex(@"(?<=var \$ROOM = ).+(?=;)", RegexOptions.Compiled);
+        public HttpClient HttpClient { get; } = new HttpClient();
+        private string LiveInfoJson { get; set; }
 
         private string _liveUrl;
 
@@ -25,28 +29,43 @@ namespace LiveRecordSharp.LiveSites
             }
         }
 
-        public HttpClient HttpClient { get; } = new HttpClient();
-
         public DouyuLiveSite(string liveUrl)
         {
             LiveUrl = liveUrl;
         }
 
-        public override async Task<bool> IsLive()
+        public override async Task<bool> IsLiveAsync()
         {
-            var content = await HttpClient.GetStringAsync(LiveUrl);
-            return JObject.Parse(content)["show_status"].ToString() == "1";
+            var json = await GetLiveInfoJsonAsync();
+            return JObject.Parse(json)["show_status"].ToString() == "1";
         }
 
-        public override Task<string> GetLiveStreamUrl()
+        public override async Task<string> GetLiveStreamUrlAsync()
         {
-
-            throw new System.NotImplementedException();
+            var json = await GetLiveInfoJsonAsync();
+            var roomId = JObject.Parse(json)["room_id"].ToString();
+            var suffix = $"room/{roomId}?aid=android&client_sys=android&time={DateTime.UtcNow.ToUnixTimeStamp()}";
+            var signBytes = MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(suffix + "1231"));
+            var sign = BitConverter.ToString(signBytes).Replace("-", string.Empty).ToLower();
+            var jsonRequestUrl = $"http://www.douyu.com/api/v1/{suffix}&auth={sign}";
+            var content = await HttpClient.GetStringAsync(jsonRequestUrl);
+            Console.WriteLine(suffix);
+            Console.WriteLine(sign);
+            Console.WriteLine(content);
+            return null;
         }
 
         public override void Dispose()
         {
             HttpClient.Dispose();
+        }
+
+        private async Task<string> GetLiveInfoJsonAsync(bool refresh = false)
+        {
+            if (!refresh && !string.IsNullOrEmpty(LiveInfoJson)) return LiveInfoJson;
+            var content = await HttpClient.GetStringAsync(LiveUrl);
+            LiveInfoJson = RoomInfoJsonRegex.Match(content).Value;
+            return LiveInfoJson;
         }
     }
 }
