@@ -49,7 +49,7 @@ namespace LiveRecordSharp
                         };
                         Log.Info($"File save path: {fileName}");
                         Log.Debug($"Process args: {p.StartInfo.Arguments}");
-                        p.ErrorDataReceived += (o, e) => Log.Error(e.Data);
+                        p.ErrorDataReceived += (o, e) => Log.Info(e.Data);
                         p.OutputDataReceived += (o, e) => Log.Info(e.Data);
                         p.Start();
                         p.BeginErrorReadLine();
