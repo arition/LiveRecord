@@ -38,7 +38,7 @@ namespace LiveRecordSharp.LiveSites
 
         public override async Task<bool> IsLiveAsync()
         {
-            var json = await GetLiveInfoJsonAsync();
+            var json = await GetLiveInfoJsonAsync(true);
             return JObject.Parse(json)["show_status"].ToString() == "1";
         }
 
