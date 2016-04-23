@@ -12,6 +12,8 @@ namespace LiveRecordSharp
         static void Main(string[] args)
         {
             var l = new DouyuLiveSite(args[0]);
+            var record = new Record(l);
+            record.StartRecordAsync().Wait();
             Console.ReadKey();
         }
     }

@@ -23,5 +23,15 @@ namespace LiveRecordSharp
             }
             return stringBuilder.ToString();
         }
+
+        public static string KeepAlpha(this string _string)
+        {
+            var stringBuilder = new StringBuilder();
+            foreach (var _char in _string.Where(t => (t >= 'a' && t <= 'z') || (t >= 'A' && t <= 'Z')))
+            {
+                stringBuilder.Append(_char);
+            }
+            return stringBuilder.ToString();
+        }
     }
 }

@@ -30,22 +30,23 @@ namespace LiveRecordSharp
                 {
                     if (await LiveSite.IsLiveAsync())
                     {
+                        Log.Info($"{LiveSite.LiveRoomName} is live.");
                         var fileName = Path.Combine("record",
-                            LiveSite.LiveRoomName.Replace(Path.GetInvalidPathChars(), "_"),
+                            LiveSite.LiveRoomName.KeepAlpha(),
                             $"{DateTime.UtcNow.ToUnixTimeStamp()}.mp4");
+                        Directory.CreateDirectory(fileName);
                         var url = await LiveSite.GetLiveStreamUrlAsync();
                         var p = new Process
                         {
                             StartInfo =
                             {
-                                Arguments = $"-i '{url}' -acodec copy -vcodec copy '{fileName}'",
+                                Arguments = $"-i {url} -acodec copy -vcodec copy {fileName}",
                                 FileName = "ffmpeg",
                                 RedirectStandardError = true,
                                 RedirectStandardOutput = true,
                                 UseShellExecute = false
                             }
                         };
-                        Log.Info($"{LiveSite.LiveRoomName} is live.");
                         Log.Info($"File save path: {fileName}");
                         Log.Debug($"Process args: {p.StartInfo.Arguments}");
                         p.ErrorDataReceived += (o, e) => Log.Error(e.Data);
