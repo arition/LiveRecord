@@ -29,6 +29,8 @@ namespace LiveRecordSharp.LiveSites
             }
         }
 
+        public override string LiveRoomName => JObject.Parse(GetLiveInfoJsonAsync().Result)["room_name"].ToString();
+
         public DouyuLiveSite(string liveUrl)
         {
             LiveUrl = liveUrl;
@@ -42,6 +44,7 @@ namespace LiveRecordSharp.LiveSites
 
         public override async Task<string> GetLiveStreamUrlAsync()
         {
+            //code from https://github.com/soimort/you-get/blob/develop/src/you_get/extractors/douyutv.py
             var json = await GetLiveInfoJsonAsync();
             var roomId = JObject.Parse(json)["room_id"].ToString();
             var suffix = $"room/{roomId}?aid=android&client_sys=android&time={DateTime.UtcNow.ToUnixTimeStamp()}";
@@ -49,10 +52,9 @@ namespace LiveRecordSharp.LiveSites
             var sign = BitConverter.ToString(signBytes).Replace("-", string.Empty).ToLower();
             var jsonRequestUrl = $"http://www.douyu.com/api/v1/{suffix}&auth={sign}";
             var content = await HttpClient.GetStringAsync(jsonRequestUrl);
-            Console.WriteLine(suffix);
-            Console.WriteLine(sign);
-            Console.WriteLine(content);
-            return null;
+            var data = JObject.Parse(content)["data"];
+            if (data["error"] != null) throw new HttpRequestException($"Error: {data["error"]}");
+            return $"{data["rtmp_url"]}/{data["rtmp_live"]}";
         }
 
         public override void Dispose()

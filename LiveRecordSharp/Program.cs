@@ -11,8 +11,7 @@ namespace LiveRecordSharp
     {
         static void Main(string[] args)
         {
-            LiveSite l = new DouyuLiveSite("http://www.douyu.com/59872");
-            l.GetLiveStreamUrlAsync().Wait();
+            var l = new DouyuLiveSite(args[0]);
             Console.ReadKey();
         }
     }
