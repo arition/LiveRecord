@@ -31,10 +31,13 @@ namespace LiveRecordSharp
                     if (await LiveSite.IsLiveAsync())
                     {
                         Log.Info($"{LiveSite.LiveRoomName} is live.");
-                        var fileName = Path.Combine("record",
-                            LiveSite.LiveRoomName.KeepAlpha(),
-                            $"{DateTime.UtcNow.ToUnixTimeStamp()}.mp4");
-                        Directory.CreateDirectory(fileName);
+                        var dirName = LiveSite.LiveRoomName.KeepAlpha();
+                        if (string.IsNullOrWhiteSpace(dirName))
+                            dirName = LiveSite.LiveUrl.Substring(LiveSite.LiveUrl.LastIndexOf("/", StringComparison.Ordinal));
+                        if (string.IsNullOrWhiteSpace(dirName))
+                            dirName = LiveSite.LiveUrl.Substring(LiveSite.LiveUrl.Substring(0, LiveSite.LiveUrl.Length - 1).LastIndexOf("/", StringComparison.Ordinal));
+                        var fileName = Path.Combine("record", dirName, $"{DateTime.UtcNow.ToUnixTimeStamp()}.mp4");
+                        Directory.CreateDirectory(new FileInfo(fileName).DirectoryName);
                         var url = await LiveSite.GetLiveStreamUrlAsync();
                         var p = new Process
                         {
