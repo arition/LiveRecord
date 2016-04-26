@@ -24,9 +24,9 @@ namespace LiveRecordSharp
         public async Task StartRecordAsync()
         {
             Log.Info("Link Start");
-            try
+            while (true)
             {
-                while (true)
+                try
                 {
                     if (await LiveSite.IsLiveAsync())
                     {
@@ -37,7 +37,8 @@ namespace LiveRecordSharp
                         if (string.IsNullOrWhiteSpace(dirName))
                             dirName = LiveSite.LiveUrl.Substring(LiveSite.LiveUrl.Substring(0, LiveSite.LiveUrl.Length - 1).LastIndexOf("/", StringComparison.Ordinal) + 1);
                         var fileName = Path.Combine("record", dirName, $"{DateTime.UtcNow.ToUnixTimeStamp()}.mp4");
-                        Directory.CreateDirectory(new FileInfo(fileName).DirectoryName);
+                        var directoryName = new FileInfo(fileName).DirectoryName;
+                        if (directoryName != null) Directory.CreateDirectory(directoryName);
                         var url = await LiveSite.GetLiveStreamUrlAsync();
                         var p = new Process
                         {
@@ -61,10 +62,10 @@ namespace LiveRecordSharp
                     }
                     await Task.Delay(10000);
                 }
-            }
-            catch (Exception e)
-            {
-                Log.Fatal(e);
+                catch (Exception e)
+                {
+                    Log.Fatal(e);
+                }
             }
         }
     }
