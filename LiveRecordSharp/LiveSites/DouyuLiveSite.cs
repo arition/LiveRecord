@@ -15,6 +15,7 @@ namespace LiveRecordSharp.LiveSites
         private Regex RoomInfoJsonRegex { get; } = new Regex(@"(?<=var \$ROOM = ).+(?=;)", RegexOptions.Compiled);
         public HttpClient HttpClient { get; } = new HttpClient();
         private string LiveInfoJson { get; set; }
+        private string UserAgent { get; } = @"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.22 Safari/537.36";
 
         private string _liveUrl;
 
@@ -33,6 +34,7 @@ namespace LiveRecordSharp.LiveSites
         public DouyuLiveSite(string liveUrl)
         {
             LiveUrl = liveUrl;
+            HttpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
         }
 
         public override async Task<bool> IsLiveAsync()
