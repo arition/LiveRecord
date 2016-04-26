@@ -33,9 +33,9 @@ namespace LiveRecordSharp
                         Log.Info($"{LiveSite.LiveRoomName} is live.");
                         var dirName = LiveSite.LiveRoomName.KeepAlpha();
                         if (string.IsNullOrWhiteSpace(dirName))
-                            dirName = LiveSite.LiveUrl.Substring(LiveSite.LiveUrl.LastIndexOf("/", StringComparison.Ordinal));
+                            dirName = LiveSite.LiveUrl.Substring(LiveSite.LiveUrl.LastIndexOf("/", StringComparison.Ordinal) + 1);
                         if (string.IsNullOrWhiteSpace(dirName))
-                            dirName = LiveSite.LiveUrl.Substring(LiveSite.LiveUrl.Substring(0, LiveSite.LiveUrl.Length - 1).LastIndexOf("/", StringComparison.Ordinal));
+                            dirName = LiveSite.LiveUrl.Substring(LiveSite.LiveUrl.Substring(0, LiveSite.LiveUrl.Length - 1).LastIndexOf("/", StringComparison.Ordinal) + 1);
                         var fileName = Path.Combine("record", dirName, $"{DateTime.UtcNow.ToUnixTimeStamp()}.mp4");
                         Directory.CreateDirectory(new FileInfo(fileName).DirectoryName);
                         var url = await LiveSite.GetLiveStreamUrlAsync();
