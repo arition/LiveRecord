@@ -47,7 +47,7 @@ namespace LiveRecordSharp.LiveSites
             //code from https://github.com/soimort/you-get/blob/develop/src/you_get/extractors/douyutv.py
             var json = await GetLiveInfoJsonAsync();
             var roomId = JObject.Parse(json)["room_id"].ToString();
-            var suffix = $"room/{roomId}?aid=android&client_sys=android&time={DateTime.UtcNow.ToUnixTimeStamp()}";
+            var suffix = $"room/{roomId}?aid=android&cdn=ws2&client_sys=android&time={DateTime.UtcNow.ToUnixTimeStamp()}";
             var signBytes = MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(suffix + "1231"));
             var sign = BitConverter.ToString(signBytes).Replace("-", string.Empty).ToLower();
             var jsonRequestUrl = $"http://www.douyu.com/api/v1/{suffix}&auth={sign}";
