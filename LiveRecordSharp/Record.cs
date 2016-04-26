@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using log4net;
-using log4net.Repository.Hierarchy;
 using LiveRecordSharp.LiveSites;
 
 namespace LiveRecordSharp
