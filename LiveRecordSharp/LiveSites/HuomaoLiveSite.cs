@@ -46,10 +46,8 @@ namespace LiveRecordSharp.LiveSites
 
         public override async Task<string> GetLiveStreamUrlAsync()
         {
-            var a = JObject.Parse(await GetLiveDataAsync())["streamList"];
-            var b = a.First()["list"];
-            var c = b.First(t => t["type"].ToString() == "TD");
-            return c["url"].ToString();
+            return JObject.Parse(await GetLiveDataAsync())["streamList"].First()["list"]
+                .First(t => t["type"].ToString() == "TD")["url"].ToString();
         }
 
         public override void Dispose()
