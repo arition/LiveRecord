@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="LiveSites\DouyuLiveSite.cs" />
+    <Compile Include="LiveSites\HuomaoLiveSite.cs" />
     <Compile Include="LiveSites\LiveSite.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="Program.cs" />
