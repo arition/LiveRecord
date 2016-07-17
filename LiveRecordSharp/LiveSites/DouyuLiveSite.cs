@@ -13,7 +13,7 @@ namespace LiveRecordSharp.LiveSites
     {
         public override Regex SiteRegex { get; } = new Regex("http://www.douyu(tv|).com/", RegexOptions.Compiled);
         private Regex RoomInfoJsonRegex { get; } = new Regex(@"(?<=var \$ROOM = ).+(?=;)", RegexOptions.Compiled);
-        public HttpClient HttpClient { get; } = new HttpClient();
+        private HttpClient HttpClient { get; } = new HttpClient();
         private string LiveInfoJson { get; set; }
         private string UserAgent { get; } = @"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.22 Safari/537.36";
 
@@ -30,6 +30,11 @@ namespace LiveRecordSharp.LiveSites
         }
 
         public override string LiveRoomName => JObject.Parse(GetLiveInfoJsonAsync().Result)["room_name"].ToString();
+
+        public DouyuLiveSite()
+        {
+            HttpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
+        }
 
         public DouyuLiveSite(string liveUrl)
         {
