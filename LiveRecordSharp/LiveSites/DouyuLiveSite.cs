@@ -25,7 +25,7 @@ namespace LiveRecordSharp.LiveSites
             set
             {
                 if (SiteRegex.IsMatch(value)) _liveUrl = value;
-                else throw new ArgumentException(Resources.DouyuLiveSite_LiveUrl_Url_does_not_match_this_site_);
+                else throw new ArgumentException(Resources.LiveUrl_Url_does_not_match_this_site_);
             }
         }
 

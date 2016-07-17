@@ -117,7 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="DouyuLiveSite_LiveUrl_Url_does_not_match_this_site_" xml:space="preserve">
+  <data name="LiveUrl_Url_does_not_match_this_site_" xml:space="preserve">
     <value>Url does not match this site.</value>
     <comment>Url does not match this site.</comment>
   </data>

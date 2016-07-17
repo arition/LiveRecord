@@ -63,9 +63,9 @@ namespace LiveRecordSharp.Properties {
         /// <summary>
         ///   查找类似 Url does not match this site. 的本地化字符串。
         /// </summary>
-        internal static string DouyuLiveSite_LiveUrl_Url_does_not_match_this_site_ {
+        internal static string LiveUrl_Url_does_not_match_this_site_ {
             get {
-                return ResourceManager.GetString("DouyuLiveSite_LiveUrl_Url_does_not_match_this_site_", resourceCulture);
+                return ResourceManager.GetString("LiveUrl_Url_does_not_match_this_site_", resourceCulture);
             }
         }
     }
