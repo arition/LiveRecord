@@ -16,6 +16,7 @@ namespace LiveRecordSharp
                 if (liveSite.SiteRegex.IsMatch(args[0]))
                 {
                     l = liveSite;
+                    l.LiveUrl = args[0];
                     break;
                 }
                 liveSite.Dispose();
