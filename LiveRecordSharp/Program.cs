@@ -10,7 +10,6 @@ namespace LiveRecordSharp
             var l = new DouyuLiveSite(args[0]);
             var record = new Record(l);
             record.StartRecordAsync().Wait();
-            Console.ReadKey();
         }
     }
 }
