@@ -12,7 +12,7 @@ namespace LiveRecordSharp
     {
         public LiveSite LiveSite { get; }
         private ILog Log { get; } = LiveRecordSharp.Log.GetLogger(typeof (Record));
-        private string SaveFormat { get; } = ".flv";
+        private string SaveFormat { get; } = ".mp4";
         private string Converter { get; } = "ffmpeg";
 
         public Record(LiveSite liveSite)
@@ -42,7 +42,7 @@ namespace LiveRecordSharp
                         {
                             StartInfo =
                             {
-                                Arguments = $"-i {url} -acodec copy -vcodec copy {fileName}{SaveFormat}",
+                                Arguments = $"-i {url} -acodec copy -vcodec copy -f segment -segment_time 1:00:00 -segment_list {fileName}_out.list {fileName}_%03d{SaveFormat}",
                                 FileName = Converter,
                                 RedirectStandardError = true,
                                 RedirectStandardOutput = true,
@@ -60,6 +60,7 @@ namespace LiveRecordSharp
                         var stopTime = DateTime.UtcNow.ToUnixTimeStamp();
                         var timeJson = new JObject
                         {
+                            ["liveRoomName"] = LiveSite.LiveRoomName,
                             ["liveUrl"] = LiveSite.LiveUrl,
                             ["startTime"] = startTime,
                             ["stopTime"] = stopTime,
