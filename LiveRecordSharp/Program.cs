@@ -32,6 +32,10 @@ namespace LiveRecordSharp
                 log.Error("无法找到可用的录制方法，请确定url输入正确");
                 return;
             }
+#if DEBUG
+            log.Debug("Press Enter to continue...");
+            Console.ReadKey();
+#endif
             var record = new Record(l);
             record.StartRecordAsync().Wait();
         }
