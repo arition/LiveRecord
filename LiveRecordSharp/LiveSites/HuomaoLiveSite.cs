@@ -11,7 +11,7 @@ namespace LiveRecordSharp.LiveSites
 {
     public sealed class HuomaoLiveSite :LiveSite
     {
-        public override Regex SiteRegex { get; } = new Regex("http://www.huomao.com/", RegexOptions.Compiled);
+        public override Regex SiteRegex { get; } = new Regex("http(s|)://www.huomao(tv|).com/", RegexOptions.Compiled);
         private Regex LiveRoomNameRegex { get; } = new Regex("(?<=<title>).*?(?=</title>)", RegexOptions.Compiled);
         private Regex VideoIdRegex { get; } = new Regex(@"(?<=getFlash\(""\d+"","").*?(?=""\);)", RegexOptions.Compiled);
         public HttpClient HttpClient { get; } = new HttpClient();

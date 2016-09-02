@@ -11,7 +11,7 @@ namespace LiveRecordSharp.LiveSites
 {
     public sealed class DouyuLiveSite : LiveSite
     {
-        public override Regex SiteRegex { get; } = new Regex("http://www.douyu(tv|).com/", RegexOptions.Compiled);
+        public override Regex SiteRegex { get; } = new Regex("http(s|)://www.douyu(tv|).com/", RegexOptions.Compiled);
         private Regex RoomInfoJsonRegex { get; } = new Regex(@"(?<=var \$ROOM = ).+(?=;)", RegexOptions.Compiled);
         private HttpClient HttpClient { get; } = new HttpClient();
         private string LiveInfoJson { get; set; }
