@@ -12,7 +12,7 @@ namespace LiveRecordSharp
     {
         public LiveSite LiveSite { get; }
         private ILog Log { get; } = LiveRecordSharp.Log.GetLogger(typeof (Record));
-        private string SaveFormat { get; } = ".mp4";
+        private string SaveFormat { get; } = ".flv";
         private string Converter { get; } = "ffmpeg";
 
         public Record(LiveSite liveSite)

@@ -9,6 +9,12 @@ namespace LiveRecordSharp
     {
         static void Main(string[] args)
         {
+            var log = Log.GetLogger(typeof(Program));
+            if (args.Length == 0)
+            {
+                log.Error("Usage: LiveRecordSharp RecordUrl");
+                return;
+            }
             var siteList = new List<LiveSite> {new DouyuLiveSite(), new HuomaoLiveSite()};
             LiveSite l = null;
             foreach (var liveSite in siteList)
@@ -20,6 +26,11 @@ namespace LiveRecordSharp
                     break;
                 }
                 liveSite.Dispose();
+            }
+            if (l == null)
+            {
+                log.Error("无法找到可用的录制方法，请确定url输入正确");
+                return;
             }
             var record = new Record(l);
             record.StartRecordAsync().Wait();

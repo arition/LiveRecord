@@ -11,9 +11,9 @@ namespace LiveRecordSharp.LiveSites
 {
     public sealed class HuomaoLiveSite :LiveSite
     {
-        public override Regex SiteRegex { get; } = new Regex("http://www.huomaotv.cn/", RegexOptions.Compiled);
+        public override Regex SiteRegex { get; } = new Regex("http://www.huomao.com/", RegexOptions.Compiled);
         private Regex LiveRoomNameRegex { get; } = new Regex("(?<=<title>).*?(?=</title>)", RegexOptions.Compiled);
-        private Regex VideoIdRegex { get; } = new Regex(@"(?<=var video_name = ').*?(?=';)", RegexOptions.Compiled);
+        private Regex VideoIdRegex { get; } = new Regex(@"(?<=getFlash\(""\d+"","").*?(?=""\);)", RegexOptions.Compiled);
         public HttpClient HttpClient { get; } = new HttpClient();
         private string Html { get; set; }
         private string LiveData { get; set; }
@@ -72,7 +72,7 @@ namespace LiveRecordSharp.LiveSites
                 {"VideoIDS", videoId},
                 {"streamtype", "live"}
             };
-            var responseMessage = await HttpClient.PostAsync("http://www.huomaotv.cn/swf/live_data",
+            var responseMessage = await HttpClient.PostAsync("http://www.huomao.com/swf/live_data",
                 new FormUrlEncodedContent(parameterDictionary));
             responseMessage.EnsureSuccessStatusCode();
             LiveData = await responseMessage.Content.ReadAsStringAsync();
