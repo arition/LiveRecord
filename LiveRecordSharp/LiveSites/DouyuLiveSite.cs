@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
@@ -53,11 +54,23 @@ namespace LiveRecordSharp.LiveSites
             //code from https://github.com/soimort/you-get/blob/develop/src/you_get/extractors/douyutv.py
             var json = await GetLiveInfoJsonAsync();
             var roomId = JObject.Parse(json)["room_id"].ToString();
-            var suffix = $"room/{roomId}?aid=android&cdn=ws2&client_sys=android&time={DateTime.UtcNow.ToUnixTimeStamp()}";
-            var signBytes = MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(suffix + "1231"));
+            var did = Guid.NewGuid().ToString().Replace("-", "").ToUpper();
+            var tt = (DateTime.UtcNow.ToUnixTimeStamp()/60).ToString();
+            var signContent = $"{roomId}{did}A12Svb&%1UUmf@hC{tt}";
+            var signBytes = MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(signContent));
             var sign = BitConverter.ToString(signBytes).Replace("-", string.Empty).ToLower();
-            var jsonRequestUrl = $"http://www.douyu.com/api/v1/{suffix}&auth={sign}";
-            var content = await HttpClient.GetStringAsync(jsonRequestUrl);
+            var jsonRequestUrl = $"http://www.douyu.com/lapi/live/getPlay/{roomId}";
+            var postContent = new FormUrlEncodedContent(new Dictionary<string, string>
+            {
+                {"cdn", "ws2"},
+                {"rate", "0"},
+                {"tt", tt},
+                {"did", did},
+                {"sign", sign}
+            });
+            var response = await HttpClient.PostAsync(jsonRequestUrl, postContent);
+            response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync();
             var data = JObject.Parse(content)["data"];
             if (data["error"] != null) throw new HttpRequestException($"Error: {data["error"]}");
             return $"{data["rtmp_url"]}/{data["rtmp_live"]}";
