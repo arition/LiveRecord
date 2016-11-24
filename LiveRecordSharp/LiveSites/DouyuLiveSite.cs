@@ -62,7 +62,7 @@ namespace LiveRecordSharp.LiveSites
             var jsonRequestUrl = $"http://www.douyu.com/lapi/live/getPlay/{roomId}";
             var postContent = new FormUrlEncodedContent(new Dictionary<string, string>
             {
-                {"cdn", "ws2"},
+                {"cdn", "ws"},
                 {"rate", "0"},
                 {"tt", tt},
                 {"did", did},
