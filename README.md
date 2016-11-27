@@ -1,15 +1,19 @@
 # LiveRecord
 
-Record Live Site Videos, Work in process.
+Record Live Site Videos.
 
-Written by C#.
+Written in C#, support Mac OS/Linux with mono.
 
-Only support douyu and huomao now.
-
-Plan to support zhanqi, pandatv, bilibili, twitch.
+Only support douyu and huomao now, and planned to support zhanqi, pandatv, bilibili, twitch.
  
 You need to add ffmpeg to PATH first.
 
 # Usage
 
+Record
+
 `./LiveRecordSharp live_url`
+
+Play
+
+`./LiveRecordSharp live_url --play`
