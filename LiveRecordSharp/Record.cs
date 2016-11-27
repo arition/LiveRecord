@@ -14,10 +14,52 @@ namespace LiveRecordSharp
         private ILog Log { get; } = LiveRecordSharp.Log.GetLogger(typeof (Record));
         private string SaveFormat { get; } = ".flv";
         private string Converter { get; } = "ffmpeg";
+        private string Player { get; } = "ffplay";
 
         public Record(LiveSite liveSite)
         {
             LiveSite = liveSite;
+        }
+
+        public async Task StartPlayAsync()
+        {
+            Log.Info("Link Start");
+            while (true)
+            {
+                try
+                {
+                    if (await LiveSite.IsLiveAsync())
+                    {
+                        Log.Info($"{LiveSite.LiveRoomName} is live.");
+                        var startTime = DateTime.UtcNow.ToUnixTimeStamp();
+                        var url = await LiveSite.GetLiveStreamUrlAsync();
+                        var p = new Process
+                        {
+                            StartInfo =
+                            {
+                                Arguments = url,
+                                FileName = Player,
+                                RedirectStandardError = true,
+                                RedirectStandardOutput = true,
+                                UseShellExecute = false
+                            }
+                        };
+                        p.ErrorDataReceived += (o, e) => Log.Info(e.Data);
+                        p.OutputDataReceived += (o, e) => Log.Info(e.Data);
+                        p.Start();
+                        p.BeginErrorReadLine();
+                        p.BeginOutputReadLine();
+                        p.WaitForExit();
+                        var stopTime = DateTime.UtcNow.ToUnixTimeStamp();
+                        if (stopTime - startTime > 10000) continue;
+                    }
+                    await Task.Delay(60000);
+                }
+                catch (Exception e)
+                {
+                    Log.Fatal(e);
+                }
+            }
         }
 
         public async Task StartRecordAsync()
