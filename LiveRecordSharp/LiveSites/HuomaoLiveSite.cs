@@ -13,7 +13,7 @@ namespace LiveRecordSharp.LiveSites
     {
         public override Regex SiteRegex { get; } = new Regex("http(s|)://www.huomao(tv|).com/", RegexOptions.Compiled);
         private Regex LiveRoomNameRegex { get; } = new Regex("(?<=<title>).*?(?=</title>)", RegexOptions.Compiled);
-        private Regex VideoIdRegex { get; } = new Regex(@"(?<=getFlash\(""\d+"","").*?(?=""\);)", RegexOptions.Compiled);
+        private Regex VideoIdRegex { get; } = new Regex(@"(?<=getFlash\(""\d+"","").*?(?="")", RegexOptions.Compiled);
         public HttpClient HttpClient { get; } = new HttpClient();
         private string Html { get; set; }
         private string LiveData { get; set; }
