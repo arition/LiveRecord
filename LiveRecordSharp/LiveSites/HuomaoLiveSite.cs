@@ -41,6 +41,15 @@ namespace LiveRecordSharp.LiveSites
 
         public override async Task<bool> IsLiveAsync()
         {
+            try
+            {
+                var testData = JObject.Parse(await GetLiveDataAsync())["streamList"].First()["list"]
+                    .First(t => t["type"].ToString() == "TD")["url"];
+            }
+            catch
+            {
+                return false;
+            }
             return JObject.Parse(await GetLiveDataAsync(true))["roomStatus"].ToString() == "1";
         }
 
