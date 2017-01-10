@@ -102,7 +102,7 @@ namespace LiveRecordSharp
                         Task.Run(async () =>
 #pragma warning restore 4014
                             {
-                                await Task.Delay(1000*60*4);
+                                await Task.Delay(1000*60*60*4);
                                 if (!p.HasExited) p.Kill();
                             });
                         p.WaitForExit();
