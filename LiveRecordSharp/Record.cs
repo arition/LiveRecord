@@ -98,6 +98,13 @@ namespace LiveRecordSharp
                         p.Start();
                         p.BeginErrorReadLine();
                         p.BeginOutputReadLine();
+#pragma warning disable 4014
+                        Task.Run(async () =>
+#pragma warning restore 4014
+                            {
+                                await Task.Delay(1000*60*4);
+                                if (!p.HasExited) p.Kill();
+                            });
                         p.WaitForExit();
                         var stopTime = DateTime.UtcNow.ToUnixTimeStamp();
                         var timeJson = new JObject
