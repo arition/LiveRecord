@@ -93,8 +93,17 @@ namespace LiveRecordSharp
                         };
                         Log.Info($"File save path: {fileName}{SaveFormat}");
                         Log.Debug($"Process args: {p.StartInfo.Arguments}");
-                        p.ErrorDataReceived += (o, e) => Log.Info(e.Data);
-                        p.OutputDataReceived += (o, e) => Log.Info(e.Data);
+                        var lastReceive = DateTime.UtcNow;
+                        p.ErrorDataReceived += (o, e) =>
+                        {
+                            Log.Info(e.Data);
+                            lastReceive = DateTime.UtcNow;
+                        };
+                        p.OutputDataReceived += (o, e) =>
+                        {
+                            Log.Info(e.Data);
+                            lastReceive = DateTime.UtcNow;
+                        };
                         p.Start();
                         p.BeginErrorReadLine();
                         p.BeginOutputReadLine();
@@ -102,8 +111,11 @@ namespace LiveRecordSharp
                         Task.Run(async () =>
 #pragma warning restore 4014
                             {
-                                await Task.Delay(1000*60*60*4);
-                                if (!p.HasExited) p.Kill();
+                                while (!p.HasExited)
+                                {
+                                    if (DateTime.UtcNow - lastReceive > TimeSpan.FromSeconds(20)) p.Kill();
+                                    await Task.Delay(5000);
+                                }
                             });
                         p.WaitForExit();
                         var stopTime = DateTime.UtcNow.ToUnixTimeStamp();
