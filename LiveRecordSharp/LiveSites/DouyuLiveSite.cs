@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
@@ -35,13 +36,13 @@ namespace LiveRecordSharp.LiveSites
 
         public DouyuLiveSite()
         {
-            HttpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
+            //HttpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
         }
 
         public DouyuLiveSite(string liveUrl)
         {
             LiveUrl = liveUrl;
-            HttpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
+            //HttpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
         }
 
         public override async Task<bool> IsLiveAsync()
@@ -52,29 +53,32 @@ namespace LiveRecordSharp.LiveSites
 
         public override async Task<string> GetLiveStreamUrlAsync()
         {
-            //code from https://github.com/soimort/you-get/blob/develop/src/you_get/extractors/douyutv.py
+            // code from https://github.com/soimort/you-get/blob/develop/src/you_get/extractors/douyutv.py
+            // Some new code from https://gist.github.com/spacemeowx2/629b1d131bd7e240a7d28742048e80fc and
+            // https://github.com/soimort/you-get/issues/1720
             var json = await GetLiveInfoJsonAsync();
             var roomId = json["room_id"].ToString();
-            var did = Guid.NewGuid().ToString().Replace("-", "").ToUpper();
-            var tt = (DateTime.UtcNow.ToUnixTimeStamp()/60).ToString();
-            var signContent = $"{roomId}{did}A12Svb&%1UUmf@hC{tt}";
+            var tt = DateTime.UtcNow.ToUnixTimeStamp().ToString();
+            var signContent =
+                $"lapi/live/thirdPart/getPlay/{roomId}?aid=pcclient&cdn=ws&rate=0&time={tt}9TUk5fjjUjg9qIMH3sdnh";
             var signBytes = MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(signContent));
             var sign = BitConverter.ToString(signBytes).Replace("-", string.Empty).ToLower();
-            var jsonRequestUrl = $"http://www.douyu.com/lapi/live/getPlay/{roomId}";
-            var postContent = new FormUrlEncodedContent(new Dictionary<string, string>
+            var jsonRequestUrl = $"https://coapi.douyucdn.cn/lapi/live/thirdPart/getPlay/{roomId}?cdn=ws&rate=0";
+            var request = new HttpRequestMessage
             {
-                {"cdn", "ws"},
-                {"rate", "0"},
-                {"tt", tt},
-                {"did", did},
-                {"sign", sign}
-            });
-            var response = await HttpClient.PostAsync(jsonRequestUrl, postContent);
+                RequestUri = new Uri(jsonRequestUrl),
+                Method = HttpMethod.Get
+            };
+            request.Headers.Add("Auth", sign);
+            request.Headers.Add("Time", tt);
+            request.Headers.Add("Aid", "pcclient");
+            var response = await HttpClient.SendAsync(request);
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync();
-            var data = JObject.Parse(content)["data"];
-            if (data["error"] != null) throw new HttpRequestException($"Error: {data["error"]}");
-            return $"{data["rtmp_url"]}/{data["rtmp_live"]}";
+            var data = JObject.Parse(content) as JToken;
+            if (data["error"].ToString() != "0") throw new HttpRequestException($"Error: {data["error"]}");
+            data = data["data"];
+            return data["live_url"].ToString();
         }
 
         public override void Dispose()
