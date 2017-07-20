@@ -15,7 +15,7 @@ namespace LiveRecordSharp
                 log.Error("Usage: LiveRecordSharp RecordUrl [--play]");
                 return;
             }
-            var siteList = new List<LiveSite> {new DouyuLiveSite(), new HuomaoLiveSite()};
+            var siteList = new List<LiveSite> {/*new DouyuLiveSite(),*/ new HuomaoLiveSite(), new PandaLiveSite()};
             LiveSite l = null;
             foreach (var liveSite in siteList)
             {
