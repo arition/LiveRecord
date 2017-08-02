@@ -4,9 +4,7 @@ Record Live Site Videos.
 
 Written in C#, support Mac OS/Linux with mono.
 
-Only support pandatv and huomao now, and planned to support zhanqi, bilibili, twitch.
-
-douyu does not work now.
+Only support douyu, panda and huomao now, and planned to support zhanqi, bilibili, twitch.
  
 You need to add ffmpeg to PATH first.
 
