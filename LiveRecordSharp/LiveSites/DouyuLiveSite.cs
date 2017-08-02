@@ -59,26 +59,18 @@ namespace LiveRecordSharp.LiveSites
             var json = await GetLiveInfoJsonAsync();
             var roomId = json["room_id"].ToString();
             var tt = DateTime.UtcNow.ToUnixTimeStamp().ToString();
-            var signContent =
-                $"lapi/live/thirdPart/getPlay/{roomId}?aid=pcclient&cdn=ws&rate=0&time={tt}9TUk5fjjUjg9qIMH3sdnh";
+            var signContent = $"room/{roomId}?aid=androidhd1&cdn=ws&client_sys=android&time={tt}Y237pxTx2In5ayGz";
             var signBytes = MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(signContent));
             var sign = BitConverter.ToString(signBytes).Replace("-", string.Empty).ToLower();
-            var jsonRequestUrl = $"https://coapi.douyucdn.cn/lapi/live/thirdPart/getPlay/{roomId}?cdn=ws&rate=0";
-            var request = new HttpRequestMessage
-            {
-                RequestUri = new Uri(jsonRequestUrl),
-                Method = HttpMethod.Get
-            };
-            request.Headers.Add("Auth", sign);
-            request.Headers.Add("Time", tt);
-            request.Headers.Add("Aid", "pcclient");
-            var response = await HttpClient.SendAsync(request);
+            var jsonRequestUrl =
+                $"https://capi.douyucdn.cn/api/v1/room/{roomId}?aid=androidhd1&cdn=ws&client_sys=android&time={tt}&auth={sign}";
+            var response = await HttpClient.GetAsync(jsonRequestUrl);
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync();
             var data = JObject.Parse(content) as JToken;
             if (data["error"].ToString() != "0") throw new HttpRequestException($"Error: {data["error"]}");
             data = data["data"];
-            return data["live_url"].ToString();
+            return data["rtmp_url"] + "/" + data["rtmp_live"];
         }
 
         public override void Dispose()
@@ -93,7 +85,19 @@ namespace LiveRecordSharp.LiveSites
             {
                 var url = "http://m.douyu.com/html5/live?roomId=" + SiteRegex.Match(LiveUrl).Groups["roomName"].Value;
                 var content = await HttpClient.GetStringAsync(url);
-                LiveInfoJson = JObject.Parse(content)["data"] as JObject;
+                if (JObject.Parse(content)["error"].ToString() == "0")
+                {
+                    LiveInfoJson = new JObject
+                    {
+                        ["room_id"] = SiteRegex.Match(LiveUrl).Groups["roomName"].Value,
+                        ["show_status"] = "1"
+                    };
+                    LiveInfoJson["room_name"] = LiveInfoJson["room_id"];
+                }
+                else
+                {
+                    LiveInfoJson = new JObject {["show_status"] = "0"};
+                }
             }
             else
             {
